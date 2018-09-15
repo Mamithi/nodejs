@@ -1,9 +1,15 @@
 const express = require('express');
 const Joi = require('joi');
+const logger = require('./logger');
+const auth = require('./auth');
 
 const app = express();
 
 app.use(express.json());
+
+app.use(logger);
+app.use(auth);
+
 
 const courses = [
     {id: 1, name: 'course1'},
@@ -95,4 +101,4 @@ function validateCourse(course){
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Listening on port ${port}...`);
-})
+});
