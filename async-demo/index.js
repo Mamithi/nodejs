@@ -8,6 +8,14 @@ getUser(1, (user) => {
         })
     })
 });
+
+getUser(1)
+.then(user => getRepositories(user.username)
+.then(repos => getCommits(repos[0])
+.then(commits => console.log(commits))))
+.catch(err => console.log('Error', err.message));
+
+
 console.log('After');
 
 function getUser(id){
@@ -26,7 +34,6 @@ function getUser(id){
 }
 
 function getRepositories(username) {
-
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             console.log(`Fetching ${username} github repositories....`);
