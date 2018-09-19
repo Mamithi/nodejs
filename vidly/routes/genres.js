@@ -1,84 +1,55 @@
 const express = require('express');
 const router = express.Router();
+const { Genre, validate } = require('../models/genre');
 
-const genres = [
-    { id: 1, category: 'Horror'},
-    { id: 2, category: 'Comedy'},
-    { id: 3, category: 'Romantic'},
-    { id: 4, category: 'History'},
-    { id: 5, category: 'Fiction'},
-];
-
- router.get('/', (req, res) => {
+ router.get('/', async(req, res) => {
+     const genres = await Genre.find().sort('name');
     return res.send(genres);
 });
 
- router.get('/:id', (req, res) => {
-    const genre = genres.find(c => c.id === parseInt(req.params.id))
-
-    if(!genre){
-        return res.status(404).send(`Video genre with id ${req.params.id} not found`);
-    }
-
-    return res.send(genre);
-});
-
- router.post('/', (req, res) => {
-    const { error } = validateGenres(req.body);
+ router.post('/', async(req, res) => {
+    const { error } = validate(req.body);
 
     if(error){
         return res.status(400).send(error.details[0].message);
     }
 
-    const genre = {
-        id : genres.length + 1,
-        category : req.body.category
-    };
+    let genre = new Genre({name: req.body.name });
 
-    genres.push(genre);
+    genre = await genre.save()
 
     return res.status(201).send(genre);
 });
 
- router.put('/:id', (req, res) => {
-    const genre = genres.find(c => c.id === parseInt(req.params.id))
+router.get('/:id', async (req, res) => {
+    const genre = await Genre.findById(req.params.id);
 
-    if(!genre){
-        return res.status(404).send(`Video genre with id ${req.params.id} not found`);
-    }
+    if(!genre)  return res.status(404).send(`Video genre with id ${req.params.id} not found`);
 
-    const { error } = validateGenres(req.body);
+    return res.status(200).send(genre);
+});
 
-    if(error){
-        return res.status(400).send(error.details[0].message);
-    }
+ router.put('/:id', async(req, res) => {
+    const { error } = validate(req.body);
+    if(error){return res.status(400).send(error.details[0].message);}
 
-    genre.category = req.body.category;
+   const genre = await Genre.findByIdAndUpdate(req.params.id, {name: req.body.name}, {
+        new: true
+    })
 
+    if(!genre) return res.status(404).send(`Video genre with id ${req.params.id} not found`);
+
+    
     res.status(200).send(genre);
 
 });
 
- router.delete('/:id', (req, res) => {
-    const genre = genres.find(c => c.id === parseInt(req.params.id))
+ router.delete('/:id', async(req, res) => {
+    const genre = await Genre.findByIdAndRemove(req.params.id);
 
-    if(!genre){
-        return res.status(404).send(`Video genre with id ${req.params.id} not found`);
-    }
-
-    const index = genres.indexOf(genre);
-    genres.splice(index, 1);
+    if(!genre)return res.status(404).send(`Video genre with id ${req.params.id} not found`);
 
     return res.send(genre);
 });
-
-function validateGenres(genre) {
-    const schema = {
-        category : Joi.string().min(3).required()
-    };
-
-    return Joi.validate(genre, schema)
-
-}
 
 module.exports = router;
