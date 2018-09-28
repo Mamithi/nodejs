@@ -1,11 +1,15 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const Joi = require('joi');
+Joi.ObjectId = require('joi-objectid')(Joi);
 
+const users = require('./routes/users');
 const movies = require('./routes/movies');
 const genres = require('./routes/genres');
 const customers = require('./routes/customers');
 const rentals = require('./routes/rentals');
 const home = require('./routes/home');
+const auth = require('./routes/auth')
 
 const app = express();
 
@@ -18,11 +22,13 @@ app.use(express.json(),  (err, req, res, next) => {
         console.error('Bad JSON');
       }
 });
+app.use('/api/users', users);
 app.use('/api/movies', movies);
 app.use('/api/genres', genres);
 app.use('/api/customers', customers);
 app.use('/api/rentals', rentals);
 app.use('/', home);
+app.use('/api/auth', auth);
 
 const port = process.env.PORT || 3000;
 
