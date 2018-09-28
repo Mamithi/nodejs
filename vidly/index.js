@@ -9,11 +9,15 @@ const home = require('./routes/home');
 
 const app = express();
 
-mongoose.connect('mongodb://localhost/vidly')
+mongoose.connect('mongodb://localhost/vidly', { useNewUrlParser: true })
 .then(() => console.log('Connected to MongoDB...'))
 .catch(err => console.error('Could not connect to MongoDB...'));
 
-app.use(express.json());
+app.use(express.json(),  (err, req, res, next) => {
+    if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+        console.error('Bad JSON');
+      }
+});
 app.use('/api/movies', movies);
 app.use('/api/genres', genres);
 app.use('/api/customers', customers);
