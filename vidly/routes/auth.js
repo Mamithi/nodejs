@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
 const Joi = require('joi');
+const jwt = require('jsonwebtoken');
 
 router.post('/', async(req, res) => {
     const { error } = validateAuth(req.body);
@@ -25,11 +26,9 @@ router.post('/', async(req, res) => {
         return res.status(400).send('Invalid email or password');
     }
 
-    res.status(200).send(true);
+    const token = jwt.sign({ _id: user._id}, 'jwtPrivateKey');
 
-   
+    res.status(200).send(token);   
 })
-
-
 
 module.exports = router;
