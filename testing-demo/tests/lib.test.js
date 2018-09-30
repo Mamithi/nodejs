@@ -39,3 +39,18 @@ describe('getProducts', () => {
     })
 });
 
+describe('registerUser', () => {
+    it('should throw if username is falsy', () => {
+        const args = [null, NaN, '', 0, false];
+        args.forEach(a => {
+            expect(() => { lib.registerUser(a) }).toThrow();
+        })
+    });
+
+    it('should return a user object if valid username is passed', () => {
+        const result = lib.registerUser('Lawrence');
+        expect(result).toMatchObject({username: 'Lawrence'});
+        expect(result.id).toBeGreaterThan(0);
+    })
+});
+
