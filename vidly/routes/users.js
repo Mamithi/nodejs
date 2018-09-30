@@ -1,9 +1,9 @@
 const express = require('express');
 const { User, validate } = require('../models/user');
 const router = express.Router();
-const mongoose = require('mongoose');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
+
 
 router.post('/', async(req, res) => {
     const { error } = validate(req.body);
@@ -25,7 +25,9 @@ router.post('/', async(req, res) => {
 
     await user.save();
 
-    return res.status(200).send(_.pick(user, ['_id','name', 'email']));
+    const token = user.generateAuthToken();
+
+    return res.header('x-auth-token', token).status(200).send(_.pick(user, ['_id','name', 'email']));
 })
 
 module.exports = router;

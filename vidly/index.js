@@ -9,9 +9,15 @@ const genres = require('./routes/genres');
 const customers = require('./routes/customers');
 const rentals = require('./routes/rentals');
 const home = require('./routes/home');
-const auth = require('./routes/auth')
+const auth = require('./routes/auth');
+const config = require('config');
 
 const app = express();
+
+if(!config.get('jwtPrivateKey')){
+    console.error('FATAL ERROR: jwt private key not set');
+    process.exit(1);
+}
 
 mongoose.connect('mongodb://localhost/vidly', { useNewUrlParser: true })
 .then(() => console.log('Connected to MongoDB...'))
