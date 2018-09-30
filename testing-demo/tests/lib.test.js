@@ -32,3 +32,10 @@ describe('getCurrencies', () => {
     });
 });
 
+describe('getProducts', () => {
+    it('should return with the given id', () => {
+        const result = lib.getProduct(1);
+        expect(result).toMatchObject({id: 1, price: 10});
+    })
+});
+
