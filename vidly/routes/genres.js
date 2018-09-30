@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { Genre, validate } = require('../models/genre');
 const auth  = require('../middleware/auth');
+const admin = require('../middleware/admin');
 
  router.get('/', async(req, res) => {
      const genres = await Genre.find().sort('name');
@@ -40,12 +41,10 @@ router.get('/:id', async (req, res) => {
 
     if(!genre) return res.status(404).send(`Video genre with id ${req.params.id} not found`);
 
-    
     res.status(200).send(genre);
-
 });
 
- router.delete('/:id', async(req, res) => {
+ router.delete('/:id', [auth, admin], async(req, res) => {
     const genre = await Genre.findByIdAndRemove(req.params.id);
 
     if(!genre)return res.status(404).send(`Video genre with id ${req.params.id} not found`);

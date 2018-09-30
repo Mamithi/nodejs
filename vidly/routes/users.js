@@ -3,6 +3,7 @@ const { User, validate } = require('../models/user');
 const router = express.Router();
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
+const auth = require('../middleware/auth');
 
 
 router.post('/', async(req, res) => {
@@ -28,6 +29,13 @@ router.post('/', async(req, res) => {
     const token = user.generateAuthToken();
 
     return res.header('x-auth-token', token).status(200).send(_.pick(user, ['_id','name', 'email']));
-})
+});
+
+router.get('/me', auth, async(req, res) => {
+    const user = await User.findById(req.user._id)
+        .select('-password');
+
+        res.send(user);
+});
 
 module.exports = router;
